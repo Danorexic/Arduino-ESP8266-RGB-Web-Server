@@ -1,43 +1,70 @@
-# Arduino-ESP8266-RGB-Web-Server
+# Arduino-ESP8266-RGB-Web-Server-FastLED
 A Wi-Fi web server for the ESP8266 platform driving a WS2812B addressable RGB Led strip - Arduino sketch
 
 Description:
-An Arduino sketch for running a Wi-Fi web server on the ESP8266-12F. Designed to drive the WS2812B addressable RGB Led strips using the Adafruit Neopixel Arduino library.
+An Arduino sketch for running a Wi-Fi web server on the ESP8266-12F. Designed to drive the WS2812B addressable RGB Led strips using the FastLED Arduino library.
 
 Construction Notes:
-The software has been written to give the best effects with a 60 LED WS2812 RGB LED strip but will work with any. The number of LED's in your strip can be set in code.
+This repository contains the Arduino program, HTML pages, and associated Eagle schematic and board design files. This project is forked from Giznoise's GitHub repo which I've modified extensively. I wanted to create a lightbox for my girlfriend and was able to control LED's with my Arduino but had no idea how to get them to be controlled via a webpage. Giznoise's project had this implemented wonderfully and I made adjustments along the way. I've reworked a fair bit of their program and added various features, libraries, and more. 
 
-To get the best effects (especially in candle mode) wrap the strip around a tube approx. 1.5 inches dia. to form a cylinder of light. Place this in an opaque container to obfuscate the individual LED's to give an overall 'glow'.
+Changes include:
+1) Changing the LED control library from Adafruit's Neopixel to the FastLED library.
+2) Improving the look of the web control pages and making them better able to adjust to different screen sizes.
+3) Swapping the HTML5 color picker to the JSColor javascript library. iOS devices did not support the HTML5 color picker. 
+4) Adding additional web control settings to support changing blending modes, choosing different patterns, etc.
+5) Added Google Assistant control support throught IFTT and Adafruit IO.
+6) Created a schematic and board layout in Eagle that supports dropping in a NodeMCU v2 for controls.
+7) Using a SN74AHCT125D level shifter in the schematic to enable the NodeMCU to better control the WS2812b strips. The strips need 5v signal logic and the NodeMCU provides 3.3v; this IC addresses this issue.
+8) Adds Android OTA support which enables you to easily upload new programs to the NodeMCU/ESP8266 board without having to use a USB cable. 
 
-This ensures that the rainbow mode is effective and also the candle mode appears to be a small tea light or candle at the bottom of the container.
+Useful Information:
+You will need to utilize the ESP8266 uploader tools to upload the data folder. You don't have to do anything special, just follow the directions for installing the tool, and just click tools, ESP8266 Sketch Data Upload and it will upload the needed files. This allows the JScolor.js file to be hosted locally on the ESP8266 vs having to host it online.
+
+Possible issues and features missing from the original project:
+
+1) Candle mode was not converted to the FastLED library. 
+2) It can be accessed via IP or via mDNS by devices on the same wifi network by typing lightbox.local in the address bar - However this feature does not function in Chrome on Android or iOS. It works in Safari on iOS and Chrome for Windows. In the future it may be possible to announce the IP address via the MQTT client but this is not implemented. The original author had similar issues and recommended finding the IP via your router admin panel. 
+3) Present board design hosted on GitHub is a revision of the one I had originally gotten fabricated and has not been fabricated and tested again. It should work without issue as I only made some small tweaks to improve the board's layout.
+4) The board and schematic allow for 4 LED strips to be connected but the program only supports one. I have not tested function of terminals 2-4 as of yet. The extra 3 were implemented as a future expandability option.
+5) The holes for the headers for the NodeMCU to drop into are spaced according to the NodeMCU Eagle library but most NodeMCU devboard pins sort of bow out a bit. I had to bend the pins on my devboards to make them align better. 
+
+Items to be improved:
+
+1) A method to announce the board's IP address, likely through the MQTT client.
+2) Improving the board design to directly implement an actual ESP8266 or ESP32 chip vs dropping in a NodeMCU v2 devboard. Dropping in the devboard was far easier for me to get the board design tested and up and running. 
+3) Additional IFTTT(Google Assistant+Adafruit IO) support for additional control such as setting the brightness, modes, etc. Presently it only supports On/Off. 
+4) Updating board design to allow for both 2.54mm and 3.5mm 3 position screw terminals, similar to how the Big Easy stepper driver allows for both sizes. 
+5) Improving board design to utilize more SMD components where possible. 
+6) An ESP32 version of this design for the future may be nice. 
+7) Potentially splitting up the html_pages.h file into separate html pages now that I know how to store and read files from the SPIFFS.
 
 Implements the following:
 
-Adafruit Neopixel Library:
-https://learn.adafruit.com/adafruit-neopixel-uberguide?view=all#arduino-library
+FastLED library:
+https://github.com/FastLED/FastLED
 
+Pubsubclient (MQTT) for the Google Assistant control:
+https://github.com/knolleary/pubsubclient
 
 ESP8266 Web Server:
 https://github.com/esp8266/Arduino/blob/master/libraries/ESP8266WebServer/examples/AdvancedWebServer/AdvancedWebServer.ino
 
+Using the onboard SPIFFS to store the JScolor library:
+https://tttapa.github.io/ESP8266/Chap11%20-%20SPIFFS.html
 
-Useful Information:
+ESP8266fs uploader tool:
+https://github.com/esp8266/arduino-esp8266fs-plugin
 
-ESP8266 Setup Guide:
-https://learn.sparkfun.com/tutorials/esp8266-thing-hookup-guide?_ga=1.192693098.1720005138.1446065268
+JSColor javascript color picker:
+http://jscolor.com/
 
-Future improvements I would like too add.
+Special thanks to:
+* The original author's hard work.
+* This Reddit post and guide for showing how to fix the flickering issues by using the level shifting IC:
+https://www.reddit.com/r/esp8266/comments/4v24c1/d1_mini_level_converter_2812b_led_power_supply/
+https://happyinmotion.com/?p=1247
+* This guide on how to use Google Assistant in conjunction with IFTTT and Adafruit IO:
+http://www.instructables.com/id/Control-Your-Projects-With-Google-Assistant-and-Ad/
+* Countless other users on StackExchange, the Arduino Forums, and other websites whose questions and answers helped me along the way. 
 
-1) Additional operation mode that allows the user to set a 'sunrise' wake-up alarm. The lamp will switch on at a certain time at zero brightness and then gradually get brighter and brighter over a user definable period of time. The color setting should also be user definable. Perhaps implementing an internet time look up to update an on-board clock.
-
-2) Test all this on a standard ESP8266-12F (around $5) rather than using the 'Sparkfun ESP8266 Thing'. - UPDATE: Done, it works Ok.
-
-3) Allow the user to set the transition time (via the html menu system), between colors for the color fade mode and rainbow mode.
-
-4) Update 21/07/2016 - Candle mode added. Experiment with '#define CANDLEPIXELS XX' (default 30) to get the best effect for your set up. Use more or less pixels to suit how bright you want the candle to be. Tweak the code if you want to try and make a better candle effect. Brightness and Colour set mode do not function when in candle mode because colour and brightness level are fundamental parts of the candle effect.
-
-5) Add more modes - Strobe, Disco, Breathing 
-
-6) Start the RGB Lamp in AP Mode first so that a user can connect directly and determine the I.P. Address it occupies on the local network. Maybe give 20 seconds for an incoming AP connection, then switch to server mode / normal operation. 
-
-The only way to determine the IP address of the lamp at the moment is to either connect to the serial port and monitor the output on start-up or log into your router. You can either tell the router to allocate an IP address based on the MAC address of your ESP8266 or just look to see what is connected and on what IP in your router logs.
+A bill of materials for Digikey is also provided within this repository. 
