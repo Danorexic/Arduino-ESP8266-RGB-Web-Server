@@ -18,7 +18,7 @@ Changes include:
 8) Adds Android OTA support which enables you to easily upload new programs to the NodeMCU/ESP8266 board without having to use a USB cable. 
 
 Useful Information:
-You will need to utilize the ESP8266 uploader tools to upload the data folder. You don't have to do anything special, just follow the directions for installing the tool, and just click tools, ESP8266 Sketch Data Upload and it will upload the needed files. This allows the JScolor.js file to be hosted locally on the ESP8266 vs having to host it online.
+You will need to utilize the ESP8266 uploader tools to upload the data folder. You don't have to do anything special, just follow the directions for installing the tool, and just click tools, ESP8266 Sketch Data Upload and it will upload the needed files. This allows the JScolor.js file to be hosted locally on the ESP8266 vs having to host it online. A link to this tool is provided at the bottom of this page. 
 
 Possible issues and features missing from the original project:
 
