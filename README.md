@@ -68,3 +68,6 @@ http://www.instructables.com/id/Control-Your-Projects-With-Google-Assistant-and-
 * Countless other users on StackExchange, the Arduino Forums, and other websites whose questions and answers helped me along the way. 
 
 A bill of materials for Digikey is also provided within this repository. 
+
+
+Demo video viewable here: https://youtu.be/otg-TUXe8Jg
