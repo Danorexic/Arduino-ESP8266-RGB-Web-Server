@@ -38,7 +38,9 @@ static uint8_t startIndex = 0;
 #define mqtt_password "Adafrui API-Key"
 WiFiClient espClient;
 PubSubClient client(espClient);
-#define control_topic "Adafruit-Username/feeds/FeedName"
+#define control_topic "Adafirut-Username/feeds/onoff"
+#define color_topic "Adafruit-Username/feeds/color"
+#define brightness_topic "Adafruit-Username/feeds/brightness"
 
 //Wifi settings
 const char *ssid = "Your SSID";
@@ -113,6 +115,8 @@ void setup ( void ) {
 //MQTT Setup
   client.setServer(mqtt_server, 1883);
   client.subscribe(control_topic);
+  client.subscribe(color_topic);
+  client.subscribe(brightness_topic);
   Serial.print("Subsribed to topic");
   client.setCallback(callback);
   Serial.print("Callback set");
@@ -164,19 +168,65 @@ void callback(char* topic, byte* payload, unsigned int length){
   Serial.print("Message arrived [");
   Serial.print(topic);
   Serial.print("] ");
-  String ON = String("ON");
-  String OFF = String("OFF");
+  String RAINBOW = String("RAINBOW");
+  String RANDOM = String("RANDOM");
   payload[length] = '\0';
   String value = String((char*)payload);
-  if (value == ON) {
+  if (value.equalsIgnoreCase("On")) {
     Serial.print("ON Received!");
     handleSwitchOn();
    }
-  if (value == OFF) {
+  if (value.equalsIgnoreCase("Off")){
     Serial.print("OFF Received!");
     handleSwitchOff();
   }
-  
+    if (value.equalsIgnoreCase(RAINBOW)) {
+    Serial.print("RAINBOW Received!");
+    handle_mode3();
+  }
+  if (value.equalsIgnoreCase(RANDOM)) {
+    Serial.print("RANDOM Received!");
+    handle_mode4();
+  }
+
+
+  if (strcmp(topic,brightness_topic)==0) {
+    int brightness_holder = value.toInt();
+    brightness = map(brightness_holder, 0, 100, 0, 255);
+    FastLED.setBrightness(brightness);
+    EEPROM.write(3, brightness);                   //write the brightness value to EEPROM to be restored on start-up
+    EEPROM.commit();
+
+  }
+  if (strcmp(topic,color_topic)==0) {
+    int x = 0; 
+    for (x=0; x<26; x=x+1){
+    //if (colorType[x] == value){
+    if (value.equalsIgnoreCase(colorType[x])){
+      Serial.print("Color received: ");
+      Serial.println(value);
+      Serial.print("Array value: ");
+      Serial.println(colorType[x]);
+      Serial.print("RGB vals: ");
+      Serial.print(colorNum[x][0]);
+      Serial.print(colorNum[x][1]);
+      Serial.print(colorNum[x][2]);
+      mode_flag = 1;   
+      red_int = colorNum[x][0];
+      green_int = colorNum[x][1];
+      blue_int = colorNum[x][2];
+      red_int = gamma_adjust[red_int];
+      green_int = gamma_adjust[green_int];
+      blue_int = gamma_adjust[blue_int];
+      EEPROM.write(0, red_int);                 //write the colour values to EEPROM to be restored on start-up
+      EEPROM.write(1, green_int);
+      EEPROM.write(2, blue_int);
+      EEPROM.write(4, mode_flag);                         //write mode to EEProm so can be restored on start-up
+      EEPROM.commit();
+      light_up_all();
+      }
+    }
+  }
   Serial.println (value);
   for (int i=0;i<length;i++) {
     Serial.print((char)payload[i]);
@@ -196,6 +246,8 @@ void reconnect() {
     if (client.connect(clientId.c_str(), mqtt_user, mqtt_password)) {
       Serial.println("connected");
       client.subscribe(control_topic);
+      client.subscribe(color_topic);
+      client.subscribe(brightness_topic);
     } else {
       Serial.print("failed, rc=");
       Serial.print(client.state());

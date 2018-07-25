@@ -4,6 +4,10 @@ A Wi-Fi web server for the ESP8266 platform driving a WS2812B addressable RGB Le
 Description:
 An Arduino sketch for running a Wi-Fi web server on the ESP8266-12F. Designed to drive the WS2812B addressable RGB Led strips using the FastLED Arduino library.
 
+Updates:
+I have now implemented brightness and color controls that is usable via Adafruit IO. For my setup at home, I use a toggle button for the on/off, a slider for brightness, and a textbox for the color commands. Casing not matter for the color and on/off commands. Valid brightness numbers are 0-100 and are mapped to the 0-255 the program uses. 
+I've also included some photos in the photos folder of my Adafruit IO dashboard and how I've setup some of my IFTTT applets. 
+
 Construction Notes:
 This repository contains the Arduino program, HTML pages, and associated Eagle schematic and board design files. This project is forked from Giznoise's GitHub repo which I've modified extensively. I wanted to create a lightbox for my girlfriend and was able to control LED's with my Arduino but had no idea how to get them to be controlled via a webpage. Giznoise's project had this implemented wonderfully and I made adjustments along the way. I've reworked a fair bit of their program and added various features, libraries, and more. 
 
@@ -32,11 +36,10 @@ Items to be improved:
 
 1) A method to announce the board's IP address, likely through the MQTT client.
 2) Improving the board design to directly implement an actual ESP8266 or ESP32 chip vs dropping in a NodeMCU v2 devboard. Dropping in the devboard was far easier for me to get the board design tested and up and running. 
-3) Additional IFTTT(Google Assistant+Adafruit IO) support for additional control such as setting the brightness, modes, etc. Presently it only supports On/Off. 
-4) Updating board design to allow for both 2.54mm and 3.5mm 3 position screw terminals, similar to how the Big Easy stepper driver allows for both sizes. 
-5) Improving board design to utilize more SMD components where possible. 
-6) An ESP32 version of this design for the future may be nice. 
-7) Potentially splitting up the html_pages.h file into separate html pages now that I know how to store and read files from the SPIFFS.
+3) Updating board design to allow for both 2.54mm and 3.5mm 3 position screw terminals, similar to how the Big Easy stepper driver allows for both sizes. 
+4) Improving board design to utilize more SMD components where possible. 
+5) An ESP32 version of this design for the future may be nice. 
+6) Potentially splitting up the html_pages.h file into separate html pages now that I know how to store and read files from the SPIFFS.
 
 Implements the following:
 
@@ -66,6 +69,8 @@ https://happyinmotion.com/?p=1247
 * This guide on how to use Google Assistant in conjunction with IFTTT and Adafruit IO:
 http://www.instructables.com/id/Control-Your-Projects-With-Google-Assistant-and-Ad/
 * Countless other users on StackExchange, the Arduino Forums, and other websites whose questions and answers helped me along the way. 
+* This guide on using multiple MQTT topics:
+https://www.baldengineer.com/multiple-mqtt-topics-pubsubclient.html
 
 A bill of materials for Digikey is also provided within this repository. 
 
